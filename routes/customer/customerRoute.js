@@ -69,6 +69,18 @@ route.post('/rateProvider', async (req, res) => {
   route.post('/makeServiceRequest', async (req, res) => {
     try {
       const { customerId, providerId, service_description } = req.body;
+  
+      // Update customer
+      await customer.findByIdAndUpdate(customerId, {
+        $push: {
+          requested_Providers: {
+            requested_provider_id: providerId,
+            service_description,  
+          }
+        }
+      });
+  
+      // Update provider
       await provider.findByIdAndUpdate(providerId, {
         $push: {
           serviceRequest: {
@@ -76,12 +88,36 @@ route.post('/rateProvider', async (req, res) => {
             service_description,  
           }
         }
-      }).then(()=>{
-        res.json({ success: true })
-      })
-    }catch(err){
-        console.log(err)
-        res.status(500).json({ error:err.message });
+      });
+  
+      res.json({ success: true });
+    } catch(err) {
+      console.log(err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+  //route to get all the service requests made
+  route.get('/getRequestedServices/:customerId', async (req, res) => {
+    const { customerId } = req.params;
+    try {
+        await customer.findById(customerId) 
+        .populate({
+            path: 'requested_Providers',
+            populate: {
+                path: 'requested_provider_id',
+                model: 'provider',
+                select: 'name provider_image' // Select the fields you want to retrieve from the customer document
+            }
+        }).then((customer)=>{
+            const requested_services = customer.requested_Providers;
+            res.status(200).json(
+              requested_services,
+            )     
+        })
+     
+    } catch (error) {
+       res.status(400).send(error.message); 
     }
   })
+  
 module.exports = route

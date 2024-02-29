@@ -30,6 +30,25 @@ const customerSchema = new mongoose.Schema({
         {
             type:mongoose.Schema.Types.ObjectId,
         }
+    ],
+    requested_Providers:[
+        {
+            requested_provider_id:{
+                type:mongoose.Schema.Types.ObjectId,
+                ref:"provider"
+            },
+            date:{
+                type:Date,
+                default:Date.now
+            },
+            status:{
+                type:String,
+                default:"pending"
+            },
+            service_description:{
+                type:String,
+            }
+        }
     ]
 },
 {
