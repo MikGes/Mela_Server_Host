@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const provider = require("../../schemas/provider");
+const customer = require("../../schemas/customer")
 //create a new provider Api
 router.post("/create", async(req, res) => {
     const {name,km,rating,birr,services,provider_image,provider_phone,provider_description} = req.body;
@@ -91,4 +92,97 @@ router.get("/getProviders/:job", async (req, res) => {
        res.status(400).send(error.message); 
     }
   })
+  //route to reject a service
+  router.put('/rejectService/:providerId/:serviceId/:customerId', async (req, res) => {
+    const { providerId, serviceId,customerId } = req.params;
+    
+    try {
+      const target_provider = await provider.findById(providerId);
+      if (!target_provider) {
+        return res.status(404).json({ error: 'Provider not found' });
+      }
+  
+      // Find the index of the service with the given serviceId
+      const serviceIndex = target_provider.serviceRequest.findIndex(service => service.serviceId === serviceId);
+      if (serviceIndex === -1) {
+        return res.status(404).json({ error: 'Service not found' });
+      }
+  
+      // Remove the service from the serviceRequest array
+      target_provider.serviceRequest.splice(serviceIndex, 1);
+  
+      // Save the updated provider document
+      await target_provider.save();
+      
+      //Customer SIDEEE
+      const target_customer = await customer.findById(customerId);
+    if (!target_customer) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    // Find the requested service with the given serviceId
+    const service = target_customer.requested_Providers.find(service => service.serviceId === serviceId);
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    // Update the status of the service to "rejected"
+    service.status = 'rejected';
+
+    // Save the updated customer document
+    await target_customer.save();
+  
+      res.json({ success: true, message: 'Success' });
+    } catch (error) {
+      console.error('Error rejecting service:', error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
+  //route to accept a service
+  router.put('/acceptService/:providerId/:serviceId/:customerId', async (req, res) => {
+    const { providerId, serviceId,customerId } = req.params;
+    
+    try {
+      // Provider side...making the status to accepted
+      const target_provider = await provider.findById(providerId);
+      if (!target_provider) {
+        return res.status(404).json({ error: 'Provider not found' });
+      }
+  
+      // Find the requested service with the given serviceId
+      const target_service = target_provider.serviceRequest.find(service => service.serviceId === serviceId);
+      if (!target_service) {
+        return res.status(404).json({ error: 'Service not found' });
+      }
+  
+      // Update the status of the service to "accepted"
+      target_service.status = 'accepted';
+  
+      // Save the updated customer document
+      await target_provider.save();
+      
+      //Customer SIDEEE
+      const target_customer = await customer.findById(customerId);
+    if (!target_customer) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    // Find the requested service with the given serviceId
+    const service = target_customer.requested_Providers.find(service => service.serviceId === serviceId);
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    // Update the status of the service to "rejected"
+    service.status = 'accepted';
+
+    // Save the updated customer document
+    await target_customer.save();
+  
+      res.json({ success: true, message: 'Success' });
+    } catch (error) {
+      console.error('Error rejecting service:', error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
 module.exports = router

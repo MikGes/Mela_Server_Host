@@ -69,11 +69,12 @@ route.post('/rateProvider', async (req, res) => {
   route.post('/makeServiceRequest', async (req, res) => {
     try {
       const { customerId, providerId, service_description } = req.body;
-  
+      const randomIdentifier = Math.random().toString(36).slice(2, 16);
       // Update customer
       await customer.findByIdAndUpdate(customerId, {
         $push: {
           requested_Providers: {
+            serviceId:randomIdentifier,
             requested_provider_id: providerId,
             service_description,  
           }
@@ -84,6 +85,7 @@ route.post('/rateProvider', async (req, res) => {
       await provider.findByIdAndUpdate(providerId, {
         $push: {
           serviceRequest: {
+            serviceId:randomIdentifier,
             request_customer_id: customerId,
             service_description,  
           }
@@ -119,5 +121,50 @@ route.post('/rateProvider', async (req, res) => {
        res.status(400).send(error.message); 
     }
   })
+  //route to cancel a request
+  route.put('/cancelRequest/:providerId/:serviceId/:customerId', async (req, res) => {
+    const { providerId, serviceId,customerId } = req.params;
+    try {
+      const target_provider = await provider.findById(providerId);
+      if (!target_provider) {
+        return res.status(404).json({ error: 'Provider not found' });
+      }
+  
+      // Find the index of the service with the given serviceId
+      const serviceIndex = target_provider.serviceRequest.findIndex(service => service.serviceId === serviceId);
+      if (serviceIndex === -1) {
+        return res.status(404).json({ error: 'Service not found' });
+      }
+  
+      // Remove the service from the serviceRequest array
+      target_provider.serviceRequest.splice(serviceIndex, 1);
+  
+      // Save the updated provider document
+      await target_provider.save();
+      
+      //Customer SIDEEE
+      const target_customer = await customer.findById(customerId);
+      if (!target_customer) {
+        return res.status(404).json({ error: 'Customer not found' });
+      }
+  
+      // Find the index of the service with the given serviceId
+      const serviceIndex1 = target_customer.requested_Providers.findIndex(service => service.serviceId === serviceId);
+      if (serviceIndex1 === -1) {
+        return res.status(404).json({ error: 'Service not found2' });
+      }
+  
+      // Remove the service from the serviceRequest array
+      target_customer.requested_Providers.splice(serviceIndex1, 1);
+  
+      // Save the updated provider document
+      await target_customer.save();
+  
+      res.json({ success: true, message: 'Success' });
+    } catch (error) {
+      console.error('Error canceling service request:', error);
+      res.status(500).json({ error: 'Server error' });
+    }
+  });
   
 module.exports = route

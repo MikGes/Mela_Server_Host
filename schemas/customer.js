@@ -37,6 +37,9 @@ const customerSchema = new mongoose.Schema({
                 type:mongoose.Schema.Types.ObjectId,
                 ref:"provider"
             },
+            serviceId:{
+                type:String
+            },
             date:{
                 type:Date,
                 default:Date.now

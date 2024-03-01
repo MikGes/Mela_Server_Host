@@ -75,6 +75,9 @@ const providerSchema = new mongoose.Schema({
                 type:mongoose.Schema.Types.ObjectId,
                 ref:"customer",
             },
+            serviceId:{
+                type:String
+            },
             service_description:{
                 type:String,
                 required:[true,"Please enter a short description"],
