@@ -89,6 +89,10 @@ const providerSchema = new mongoose.Schema({
             status:{
                 type:String,
                 default:"pending"
+            },
+            proceeded_by_Customer:{
+                type:Boolean,
+                default:false
             }
         }
     ]

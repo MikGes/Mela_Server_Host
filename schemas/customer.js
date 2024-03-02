@@ -50,6 +50,10 @@ const customerSchema = new mongoose.Schema({
             },
             service_description:{
                 type:String,
+            },
+            proceed:{
+                type:Boolean,
+                default:false
             }
         }
     ]
