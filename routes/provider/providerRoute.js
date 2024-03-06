@@ -185,4 +185,15 @@ router.get("/getProviders/:job", async (req, res) => {
       res.status(500).json({ error: 'Server error' });
     }
   });
+  //route to update the rating attribute in the provider collection
+  router.put('/updateRating/:providerId', async (req, res) => {
+    const { providerId } = req.params;
+    const { rating } = req.body;
+    try {
+      await provider.findByIdAndUpdate(providerId, { rating });
+    }catch (error) {
+      res.json({ success: false, message: error.message });
+    }
+    return res.json({ success: true, message: 'Success' });
+  })
 module.exports = router
