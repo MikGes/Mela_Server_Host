@@ -54,9 +54,20 @@ const customerSchema = new mongoose.Schema({
             proceed:{
                 type:Boolean,
                 default:false
-            }
+            },
+            
         }
-    ]
+    ],
+    location:{
+        latitude:{
+            type:Number,
+            default:""
+        },
+        longitude:{
+            type:Number,
+            default:""
+        }
+    }
 },
 {
     timestamps:true

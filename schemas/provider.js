@@ -93,9 +93,20 @@ const providerSchema = new mongoose.Schema({
             proceeded_by_Customer:{
                 type:Boolean,
                 default:false
-            }
+            },
+            
         }
-    ]
+    ],
+    location:{
+        latitude:{
+            type:Number,
+            default:""
+        },
+        longitude:{
+            type:Number,
+            default:""
+        }
+    }
     
 },
 {

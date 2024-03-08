@@ -4,7 +4,7 @@ const provider = require("../../schemas/provider");
 const customer = require("../../schemas/customer")
 //create a new provider Api
 router.post("/create", async(req, res) => {
-    const {name,km,rating,birr,services,provider_image,provider_phone,provider_description} = req.body;
+    const {name,km,rating,birr,services,provider_image,provider_phone,provider_description,location} = req.body;
    try{
     await provider.create({
         name,
@@ -14,7 +14,8 @@ router.post("/create", async(req, res) => {
         services,
         provider_image,
         provider_phone,
-        provider_description
+        provider_description,
+        location
         
     }).then(()=>{
         res.status(200).json({
