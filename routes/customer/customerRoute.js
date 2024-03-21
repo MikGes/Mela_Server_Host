@@ -3,33 +3,86 @@ const route = express.Router()
 const customer = require("../../schemas/customer")
 const provider = require("../../schemas/provider")
 const report = require("../../schemas/report")
-
+const bcrypt = require('bcrypt');
 //create customer account Api
-route.post("/create", async(req, res) => {
-    const {name,email} = req.body
-    try {
-        await customer.create({
-          name,
-          email,
-          
-        }).then(()=>{
-            res.status(200).json({
-                success:true
-            })
-        }).catch(()=>{
-            res.status(400).json({
-                success:false
-            })
-        })
-        
-    } catch (error) {
-        res.status(400).json({
-            message:"Unable to create customer",
-            success:false
-        })
+route.post("/create", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if a user with the customer email already exists
+    const existingUser = await customer.findOne({ email });
+
+    if (existingUser) {
+      return res.json({
+        success: false,
+        message: "Email already exists"
+      });
     }
-})
-//route to rate a customer
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save the user in the database
+    await customer.create({
+      email,
+      password: hashedPassword,
+      type_of_user:"customer"
+    });
+
+    res.status(200).json({
+      success: true
+    });
+  } catch (error) {
+    console.error('Error creating customer:', error);
+    res.json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+//route to login a customer
+route.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find the user with the provided email
+    const target_customer = await customer.findOne({ email });
+
+    // If no user is found with the provided email, return an error
+    if (!target_customer) {
+      return res.json({
+        success: false,
+        message: "Email not found"
+      });
+    }
+
+    // Compare the provided password with the hashed password from the database
+    const passwordMatch = await bcrypt.compare(password, target_customer.password);
+
+    // If passwords don't match, return an error
+    if (!passwordMatch) {
+      return res.json({
+        success: false,
+        message: "Incorrect password"
+      });
+    }
+
+    // If email and password are correct, return a success message
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: target_customer
+    });
+  } catch (error) {
+    console.error('Error logging in customer:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error"
+    });
+  }
+});
+
+//route to rate a provider
 route.post('/rateProvider', async (req, res) => {
     try {
       const { providerId, customerId, rate, rateMessage } = req.body;

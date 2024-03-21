@@ -2,38 +2,43 @@ const express = require("express");
 const router = express.Router();
 const provider = require("../../schemas/provider");
 const customer = require("../../schemas/customer")
+const bcrypt = require('bcrypt');
 //create a new provider Api
-router.post("/create", async(req, res) => {
-    const {name,km,rating,birr,services,provider_image,provider_phone,provider_description,location} = req.body;
-   try{
+router.post("/create", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Check if a user with the provided email already exists
+    const existingUser = await provider.findOne({ email });
+
+    if (existingUser) {
+      return res.json({
+        success: false,
+        message: "Email already exists"
+      });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Save the user in the database
     await provider.create({
-        name,
-        km,
-        rating,
-        birr,
-        services,
-        provider_image,
-        provider_phone,
-        provider_description,
-        location
-        
-    }).then(()=>{
-        res.status(200).json({
-            success:true
-        })
-    }).catch(()=>{
-        res.status(400).json({
-            success:false
-        })
-    })
-   }catch(err){
-    console.log("Unable to create provider",err)
-    res.status(400).json({
-        message:"Unable to create provider",
-        success:false
-    })
-   }
-})
+      email,
+      password: hashedPassword
+    });
+
+    res.status(200).json({
+      success: true
+    });
+  } catch (error) {
+    console.error('Error creating provider:', error);
+    res.json({
+      success: false,
+      message: "Unable to create provider"
+    });
+  }
+});
+
 //get all the providers Api
 router.get("/getProviders/:job", async (req, res) => {
     const { job } = req.params;

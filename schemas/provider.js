@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 const providerSchema = new mongoose.Schema({
     name:{
         type:String,
-        required:[true,"Please enter a name"],
+        // required:[true,"Please enter a name"],
+        default:""
     },
     password:{
         type:String,

@@ -2,17 +2,25 @@ const mongoose = require("mongoose");
 const customerSchema = new mongoose.Schema({
     name:{
         type:String,
-        required:[true,"Please enter a name"],
+        // required:[true,"Please enter a name"],
+        default:""
     },
     password:{
         type:String,
-        // required:[true,"Please enter a password"],
-        default:""
+        required:[true,"Please enter a password"],
     },
     email:{
         type:String,
-        // required:[true,"Please enter an email"],
+        required:[true,"Please enter an email"],
         default:""
+    },
+    type_of_user:{
+        type:String,
+        default:""
+    },
+    completed_profile:{
+        type:Boolean,
+        default:false
     },
     km:{
         type:Number,
