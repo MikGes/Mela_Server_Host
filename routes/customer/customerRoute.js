@@ -75,7 +75,7 @@ route.post("/login", async (req, res) => {
     });
   } catch (error) {
     console.error('Error logging in customer:', error);
-    res.status(500).json({
+    res.json({
       success: false,
       message: "Internal server error"
     });
@@ -100,7 +100,7 @@ route.post('/rateProvider', async (req, res) => {
       res.json({ success: true, t_provider });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ err });
+      res.json({ err });
     }
   });
   //route to report a provider
@@ -115,7 +115,7 @@ route.post('/rateProvider', async (req, res) => {
       res.status(200).json({ success: true });
     }catch(err){
         console.log(err)
-        res.status(500).json({ err });
+        res.json({ err });
     }
   })
   //route to make a service request
@@ -148,7 +148,7 @@ route.post('/rateProvider', async (req, res) => {
       res.json({ success: true });
     } catch(err) {
       console.log(err);
-      res.status(500).json({ error: err.message });
+      res.json({ error: err.message });
     }
   });
   //route to get all the service requests made
@@ -171,7 +171,7 @@ route.post('/rateProvider', async (req, res) => {
         })
      
     } catch (error) {
-       res.status(400).send(error.message); 
+       res.send(error.message); 
     }
   })
   //route to cancel a request
@@ -186,7 +186,7 @@ route.post('/rateProvider', async (req, res) => {
       // Find the index of the service with the given serviceId
       const serviceIndex = target_provider.serviceRequest.findIndex(service => service.serviceId === serviceId);
       if (serviceIndex === -1) {
-        return res.status(404).json({ error: 'Service not found' });
+        return res.json({ error: 'Service not found' });
       }
   
       // Remove the service from the serviceRequest array
@@ -198,13 +198,13 @@ route.post('/rateProvider', async (req, res) => {
       //Customer SIDEEE
       const target_customer = await customer.findById(customerId);
       if (!target_customer) {
-        return res.status(404).json({ error: 'Customer not found' });
+        return res.json({ error: 'Customer not found' });
       }
   
       // Find the index of the service with the given serviceId
       const serviceIndex1 = target_customer.requested_Providers.findIndex(service => service.serviceId === serviceId);
       if (serviceIndex1 === -1) {
-        return res.status(404).json({ error: 'Service not found2' });
+        return res.json({ error: 'Service not found2' });
       }
   
       // Remove the service from the serviceRequest array
@@ -216,7 +216,7 @@ route.post('/rateProvider', async (req, res) => {
       res.json({ success: true, message: 'Success' });
     } catch (error) {
       console.error('Error canceling service request:', error);
-      res.status(500).json({ error: 'Server error' });
+      res.json({ error: 'Server error' });
     }
   });
   //route to proceed a service
@@ -227,13 +227,13 @@ route.post('/rateProvider', async (req, res) => {
       // Provider side...making the status to accepted
       const target_provider = await provider.findById(providerId);
       if (!target_provider) {
-        return res.status(404).json({ error: 'Provider not found' });
+        return res.json({ error: 'Provider not found' });
       }
   
       // Find the requested service with the given serviceId
       const target_service = target_provider.serviceRequest.find(service => service.serviceId === serviceId);
       if (!target_service) {
-        return res.status(404).json({ error: 'Service not found' });
+        return res.json({ error: 'Service not found' });
       }
   
       // Update the status of the service to "accepted"
@@ -245,13 +245,13 @@ route.post('/rateProvider', async (req, res) => {
       //Customer SIDEEE
       const target_customer = await customer.findById(customerId);
     if (!target_customer) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.json({ error: 'Customer not found' });
     }
 
     // Find the requested service with the given serviceId
     const service = target_customer.requested_Providers.find(service => service.serviceId === serviceId);
     if (!service) {
-      return res.status(404).json({ error: 'Service not found' });
+      return res.json({ error: 'Service not found' });
     }
 
     // Update the status of the service to "rejected"
@@ -263,7 +263,7 @@ route.post('/rateProvider', async (req, res) => {
       res.json({ success: true, message: 'Success' });
     } catch (error) {
       console.error('Error rejecting service:', error);
-      res.status(500).json({ error: 'Server error' });
+      res.json({ error: 'Server error' });
     }
   });
   //route to cancel a request by the customer after the provider has accepted
@@ -274,13 +274,13 @@ route.post('/rateProvider', async (req, res) => {
       // Provider side...making the status to accepted
       const target_provider = await provider.findById(providerId);
       if (!target_provider) {
-        return res.status(404).json({ error: 'Provider not found' });
+        return res.json({ error: 'Provider not found' });
       }
   
       // Find the requested service with the given serviceId
       const target_service = target_provider.serviceRequest.find(service => service.serviceId === serviceId);
       if (!target_service) {
-        return res.status(404).json({ error: 'Service not found' });
+        return res.json({ error: 'Service not found' });
       }
   
       // Update the status of the service to "accepted"
@@ -292,13 +292,13 @@ route.post('/rateProvider', async (req, res) => {
       //Customer SIDEEE
       const target_customer = await customer.findById(customerId);
     if (!target_customer) {
-      return res.status(404).json({ error: 'Customer not found' });
+      return res.json({ error: 'Customer not found' });
     }
 
     // Find the requested service with the given serviceId
     const service = target_customer.requested_Providers.find(service => service.serviceId === serviceId);
     if (!service) {
-      return res.status(404).json({ error: 'Service not found' });
+      return res.json({ error: 'Service not found' });
     }
 
     // Update the status of the service to "rejected"
@@ -310,7 +310,7 @@ route.post('/rateProvider', async (req, res) => {
       res.json({ success: true, message: 'Success' });
     } catch (error) {
       console.error('Error rejecting service:', error);
-      res.status(500).json({ error: 'Server error' });
+      res.json({ error: 'Server error' });
     }
   });
   

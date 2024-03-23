@@ -20,6 +20,14 @@ const providerSchema = new mongoose.Schema({
         default:0,
 
     },
+    type_of_user:{
+        type:String,
+        default:""
+    },
+    completed_profile:{
+        type:Boolean,
+        default:false
+    },
     birr:{
         type:Number,
         default:0

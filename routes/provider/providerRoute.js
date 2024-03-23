@@ -8,7 +8,7 @@ router.post("/create", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Check if a user with the provided email already exists
+    // Check if a user with the customer email already exists
     const existingUser = await provider.findOne({ email });
 
     if (existingUser) {
@@ -24,7 +24,8 @@ router.post("/create", async (req, res) => {
     // Save the user in the database
     await provider.create({
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      type_of_user:"provider"
     });
 
     res.status(200).json({
@@ -34,7 +35,48 @@ router.post("/create", async (req, res) => {
     console.error('Error creating provider:', error);
     res.json({
       success: false,
-      message: "Unable to create provider"
+      message: error.message
+    });
+  }
+});
+//login provider Api
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find the user with the provided email
+    const target_provider = await provider.findOne({ email });
+
+    // If no user is found with the provided email, return an error
+    if (!target_provider) {
+      return res.json({
+        success: false,
+        message: "Email not found"
+      });
+    }
+
+    // Compare the provided password with the hashed password from the database
+    const passwordMatch = await bcrypt.compare(password, target_provider.password);
+
+    // If passwords don't match, return an error
+    if (!passwordMatch) {
+      return res.json({
+        success: false,
+        message: "Incorrect password"
+      });
+    }
+
+    // If email and password are correct, return a success message
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: target_provider
+    });
+  } catch (error) {
+    console.error('Error logging in provider:', error);
+    res.json({
+      success: false,
+      message: "Internal server error"
     });
   }
 });
