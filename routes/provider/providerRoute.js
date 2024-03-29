@@ -127,7 +127,7 @@ router.get("/getProviders/:job", async (req, res) => {
             populate: {
                 path: 'request_customer_id',
                 model: 'customer',
-                select: 'name customer_image' // Select the fields you want to retrieve from the customer document
+                select: 'name customer_image customer_phone' // Select the fields you want to retrieve from the customer document
             }
         }).then((provider)=>{
             const services = provider.serviceRequest;
