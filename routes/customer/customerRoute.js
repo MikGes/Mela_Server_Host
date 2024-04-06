@@ -40,6 +40,25 @@ route.post("/create", async (req, res) => {
     });
   }
 });
+//route to get a specific customer
+
+//route to get a specific customer
+route.get("/get/:customerId", async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const target_customer = await customer.findById(customerId);
+
+    if (!target_customer) {
+      return res.json({ error: 'Customer not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      user:target_customer});
+  } catch (error) {
+    res.send(error.message);
+  }
+});
 //route to login a customer
 route.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -339,4 +358,27 @@ route.post('/rateProvider', async (req, res) => {
         res.json({ message: 'Internal server error' });
     }
 });
+//route to save customer profile and set the completed_profile to true
+route.put('/saveProfile/:customerId', async (req, res) => {
+    const customerId = req.params.customerId;
+    const {phone, fullname, image} = req.body;
+    try {
+        const target_customer = await customer.findById(customerId);
+
+        if (!target_customer) {
+            return res.json({ error: 'Customer not found' });
+            
+        }
+
+        target_customer.completed_profile = true;
+        target_customer.customer_phone = phone;
+        target_customer.name = fullname;
+        target_customer.customer_image = image;
+        await target_customer.save();
+        res.json({ message: 'Profile saved successfully' });
+    } catch (error) {
+        console.error('Error saving profile:', error);
+        res.json({ message: 'Internal server error' });
+    }
+})
 module.exports = route
