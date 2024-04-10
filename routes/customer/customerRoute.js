@@ -332,32 +332,7 @@ route.post('/rateProvider', async (req, res) => {
       res.json({ error: 'Server error' });
     }
   });
-  //route to update the location of the custome
-  route.put('/updateLocation/:customerId', async (req, res) => {
-    const { latitude, longitude } = req.body;
-    const customerId = req.params.customerId;
-
-    try {
-        // Find the customer by ID
-        const target_customer = await customer.findById(customerId);
-
-        if (!target_customer) {
-            return res.status(404).json({ message: 'Customer not found' });
-        }
-
-        // Update latitude and longitude
-        target_customer.location.latitude = latitude;
-        target_customer.location.longitude = longitude;
-
-        // Save the updated customer
-        await target_customer.save();
-
-        res.json({ message: 'Location updated successfully' });
-    } catch (error) {
-        console.error('Error updating location:', error);
-        res.json({ message: 'Internal server error' });
-    }
-});
+  
 //route to save customer profile and set the completed_profile to true
 route.put('/saveProfile/:customerId', async (req, res) => {
     const customerId = req.params.customerId;

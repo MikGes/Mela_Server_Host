@@ -244,4 +244,30 @@ router.get("/getProviders/:job", async (req, res) => {
     }
     return res.json({ success: true, message: 'Success' });
   })
+  //route to update providers location
+  router.put('/updateLocation/:providerId', async (req, res) => {
+    const { latitude, longitude } = req.body;
+    const providerId = req.params.providerId;
+
+    try {
+        // Find the customer by ID
+        const target_provider = await provider.findById(providerId);
+
+        if (!target_provider) {
+            return res.status(404).json({ message: 'Provider not found' });
+        }
+
+        // Update latitude and longitude
+        target_provider.location.latitude = latitude;
+        target_provider.location.longitude = longitude;
+
+        // Save the updated customer
+        await target_provider.save();
+
+        res.json({ message: 'Location updated successfully' });
+    } catch (error) {
+        console.error('Error updating location:', error);
+        res.json({ message: 'Internal server error' });
+    }
+});
 module.exports = router
