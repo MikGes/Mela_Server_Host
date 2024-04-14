@@ -5,6 +5,10 @@ const providerSchema = new mongoose.Schema({
         // required:[true,"Please enter a name"],
         default:""
     },
+    gender:{
+        type:String,
+        default:""
+    },
     password:{
         type:String,
         // required:[true,"Please enter a password"],
@@ -32,10 +36,6 @@ const providerSchema = new mongoose.Schema({
         type:Number,
         default:0
     },
-    km:{
-        type:Number,
-        default:null,
-    },
     provider_image:{
         type:String,
         default:""
@@ -49,6 +49,10 @@ const providerSchema = new mongoose.Schema({
         default:""
     },
     status:{
+        type:Boolean,
+        default:false
+    },
+    activatedByAdmin:{
         type:Boolean,
         default:false
     },
@@ -115,6 +119,29 @@ const providerSchema = new mongoose.Schema({
             type:Number,
             default:""
         }
+    },
+    qualifications:[
+        {
+            qualification:{
+                type:String
+            }
+        }
+    ],
+    responsiblePersonInfo:[
+        {
+            name:{
+                type:String
+            },
+            phone:{
+                type:String
+            },
+            idPhoto:{
+                type:String
+            }
+        }
+    ],
+    idCardPhoto:{
+        type:String
     }
     
 },

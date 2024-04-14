@@ -270,4 +270,62 @@ router.get("/getProviders/:job", async (req, res) => {
         res.json({ message: 'Internal server error' });
     }
 });
+//route to update providers information
+router.put('/updateInfo/:providerId', async (req, res) => {
+    const { name,
+      provider_image, 
+      provider_description, 
+      provider_phone, 
+      // services,
+      // qualifications,
+      // responsiblePersonInfo,
+      // idCardPhoto,
+      gender
+    } = req.body;
+    const providerId = req.params.providerId;
+
+    try {
+        // Find the customer by ID
+        const target_provider = await provider.findById(providerId);
+
+        if (!target_provider) {
+            return res.status(404).json({ message: 'Provider not found' });
+        }
+
+        // Update name, description, address, phone, email
+        target_provider.name = name;
+        target_provider.provider_image = provider_image;
+        target_provider.provider_description = provider_description;
+        target_provider.provider_phone = provider_phone;
+        // target_provider.services = services;
+        // target_provider.qualifications = qualifications;
+        // target_provider.responsiblePersonInfo = responsiblePersonInfo;
+        // target_provider.idCardPhoto = idCardPhoto;
+        target_provider.gender = gender;
+        target_provider.completed_profile = true;
+
+        // Save the updated customer
+        await target_provider.save();
+
+        res.json({ message: 'Information updated successfully' });
+    } catch (error) {
+        console.error('Error updating information:', error);
+        res.json({ message: 'Internal server error' });
+    }
+});
+//route to get a specific provider
+router.get('/getProvider/:providerId', async (req, res) => {
+  const providerId = req.params.providerId;
+  try {
+    const provider = await provider.findById(providerId);
+    if (!provider) {
+      return res.json({ error: 'Provider not found' });
+    }
+    res.json({user: provider});
+  } catch (error) {
+    console.error('Error getting provider:', error);
+    res.json({ error: 'Server error' });
+  }
+});
+
 module.exports = router
