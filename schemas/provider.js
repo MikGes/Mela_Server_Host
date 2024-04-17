@@ -5,6 +5,10 @@ const providerSchema = new mongoose.Schema({
         // required:[true,"Please enter a name"],
         default:""
     },
+    age:{
+        type:Number,
+        default:0
+    },
     gender:{
         type:String,
         default:""
@@ -127,7 +131,7 @@ const providerSchema = new mongoose.Schema({
             }
         }
     ],
-    responsiblePersonInfo:[
+    responsiblePersonInfo:
         {
             name:{
                 type:String
@@ -138,8 +142,7 @@ const providerSchema = new mongoose.Schema({
             idPhoto:{
                 type:String
             }
-        }
-    ],
+        },
     idCardPhoto:{
         type:String
     }

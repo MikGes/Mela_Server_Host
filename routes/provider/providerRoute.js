@@ -272,56 +272,76 @@ router.get("/getProviders/:job", async (req, res) => {
 });
 //route to update providers information
 router.put('/updateInfo/:providerId', async (req, res) => {
-    const { name,
-      provider_image, 
-      provider_description, 
-      provider_phone, 
-      // services,
-      // qualifications,
-      // responsiblePersonInfo,
-      // idCardPhoto,
-      gender
-    } = req.body;
-    const providerId = req.params.providerId;
+  const {  
+    name,
+    provider_phone,
+    provider_image, 
+    age,
+    gender,
+    provider_idCard,
+    provider_description, 
+    provider_qualifications,
+    services,
+    nameOfresposiblePerson,
+    phoneOfresponsiblePerson,
+    responsiblePersonIdCard
+  } = req.body;
+  const providerId = req.params.providerId;
 
-    try {
-        // Find the customer by ID
-        const target_provider = await provider.findById(providerId);
+  try {
+    // Find the provider by ID
+    const targetProvider = await provider.findById(providerId);
 
-        if (!target_provider) {
-            return res.status(404).json({ message: 'Provider not found' });
-        }
-
-        // Update name, description, address, phone, email
-        target_provider.name = name;
-        target_provider.provider_image = provider_image;
-        target_provider.provider_description = provider_description;
-        target_provider.provider_phone = provider_phone;
-        // target_provider.services = services;
-        // target_provider.qualifications = qualifications;
-        // target_provider.responsiblePersonInfo = responsiblePersonInfo;
-        // target_provider.idCardPhoto = idCardPhoto;
-        target_provider.gender = gender;
-        target_provider.completed_profile = true;
-
-        // Save the updated customer
-        await target_provider.save();
-
-        res.json({ message: 'Information updated successfully' });
-    } catch (error) {
-        console.error('Error updating information:', error);
-        res.json({ message: 'Internal server error' });
+    if (!targetProvider) {
+      return res.status(404).json({ message: 'Provider not found' });
     }
+
+    // Update provider information
+    targetProvider.name = name;
+    targetProvider.provider_phone = provider_phone;
+    targetProvider.provider_image = provider_image;
+    targetProvider.age = age;
+    targetProvider.gender = gender;
+    targetProvider.idCardPhoto = provider_idCard;
+    targetProvider.provider_description = provider_description;
+    targetProvider.services = services;
+    targetProvider.completed_profile = true;
+    
+    // Update qualifications
+    if (provider_qualifications && provider_qualifications.length > 0) {
+      targetProvider.qualifications = provider_qualifications.map(qualification => ({ qualification }));
+    } else {
+      targetProvider.qualifications = []; // If qualifications array is empty or not provided, set it to an empty array
+    }
+
+    // Update responsiblePersonInfo
+    targetProvider.responsiblePersonInfo = {
+      name: nameOfresposiblePerson,
+      phone: phoneOfresponsiblePerson,
+      idPhoto: responsiblePersonIdCard
+    };
+
+    // Save the updated provider
+    await targetProvider.save();
+
+    res.json({ message: 'Information updated successfully' });
+  } catch (error) {
+    console.error('Error updating provider information:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
+
+
+module.exports = router;
 //route to get a specific provider
 router.get('/getProvider/:providerId', async (req, res) => {
   const providerId = req.params.providerId;
   try {
-    const provider = await provider.findById(providerId);
-    if (!provider) {
+    const tar_provider = await provider.findById(providerId);
+    if (!tar_provider) {
       return res.json({ error: 'Provider not found' });
     }
-    res.json({user: provider});
+    res.json({user: tar_provider,success: true});
   } catch (error) {
     console.error('Error getting provider:', error);
     res.json({ error: 'Server error' });
