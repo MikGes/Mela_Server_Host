@@ -20,7 +20,7 @@ route.post("/create", async (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 5);
 
     // Save the user in the database
     await customer.create({

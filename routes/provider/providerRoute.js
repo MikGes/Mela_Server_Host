@@ -19,7 +19,7 @@ router.post("/create", async (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 5);
 
     // Save the user in the database
     await provider.create({
@@ -347,5 +347,22 @@ router.get('/getProvider/:providerId', async (req, res) => {
     res.json({ error: 'Server error' });
   }
 });
+//change password
+router.patch('/changePassword/:providerId', async(req,res)=>{
+  try {
+    const {id} = req.params.providerId;
+    const {newPassword} = req.body
+    let target_provider = await provider.findById(id)
+    if(!target_provider){
+      return res.json({error:"Provider is not found!"})
+    }
+    else{
+      const hashedPassword = await bcrypt.hash(newPassword, 5);
+      target_provider.password = newPassword
+    }
+  } catch (error) {
+    res.json({error:error.message})
+  }
+})
 
 module.exports = router
