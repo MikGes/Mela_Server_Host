@@ -350,7 +350,7 @@ router.get('/getProvider/:providerId', async (req, res) => {
 //change password
 router.patch('/changePassword/:providerId', async(req,res)=>{
   try {
-    const {id} = req.params.providerId;
+    const id = req.params.providerId;
     const {newPassword} = req.body
     let target_provider = await provider.findById(id)
     if(!target_provider){
@@ -358,7 +358,41 @@ router.patch('/changePassword/:providerId', async(req,res)=>{
     }
     else{
       const hashedPassword = await bcrypt.hash(newPassword, 5);
-      target_provider.password = newPassword
+      target_provider.password = hashedPassword
+      await target_provider.save()
+      res.json({success:true})
+    }
+  } catch (error) {
+    res.json({error:error.message})
+  }
+})
+//route to see if certain provider is online or not
+router.get('/getOnlineStatus/:providerId', async (req, res) => {
+  const providerId = req.params.providerId;
+  try {
+    const tar_provider = await provider.findById(providerId);
+    if (!tar_provider) {
+      return res.json({ error: 'Provider not found' });
+    }
+    res.json({status: tar_provider.status,success: true});
+  } catch (error) {
+    console.error('Error getting provider:', error);
+    res.json({ error: 'Server error' });
+  }
+});
+//route to update the status of the service provider
+router.put('/updateStatus/:providerId', async (req, res) => {
+  try {
+    const id = req.params.providerId;
+    const {status} = req.body
+    let target_provider = await provider.findById(id)
+    if(!target_provider){
+      return res.json({error:"Provider is not found!"})
+    }
+    else{
+      target_provider.status = status
+      await target_provider.save()
+      res.json({success:true})
     }
   } catch (error) {
     res.json({error:error.message})
