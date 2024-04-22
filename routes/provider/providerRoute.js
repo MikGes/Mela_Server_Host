@@ -284,7 +284,8 @@ router.put('/updateInfo/:providerId', async (req, res) => {
     services,
     nameOfresposiblePerson,
     phoneOfresponsiblePerson,
-    responsiblePersonIdCard
+    responsiblePersonIdCard,
+    birr
   } = req.body;
   const providerId = req.params.providerId;
 
@@ -305,6 +306,7 @@ router.put('/updateInfo/:providerId', async (req, res) => {
     targetProvider.idCardPhoto = provider_idCard;
     targetProvider.provider_description = provider_description;
     targetProvider.services = services;
+    targetProvider.birr = birr;
     targetProvider.completed_profile = true;
     
     // Update qualifications

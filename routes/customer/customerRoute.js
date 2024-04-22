@@ -170,6 +170,25 @@ route.post('/rateProvider', async (req, res) => {
       res.json({ error: err.message });
     }
   });
+  //route to change the password of a customer
+  route.patch('/changePassword/:customerId', async(req,res)=>{
+    try {
+      const id = req.params.customerId;
+      const {newPassword} = req.body
+      let target_customer = await customer.findById(id)
+      if(!target_customer){
+        return res.json({error:"Customer is not found!"})
+      }
+      else{
+        const hashedPassword = await bcrypt.hash(newPassword, 5);
+        target_customer.password = hashedPassword
+        await target_customer.save()
+        res.json({success:true})
+      }
+    } catch (error) {
+      res.json({error:error.message})
+    }
+  })
   //route to get all the service requests made
   route.get('/getRequestedServices/:customerId', async (req, res) => {
     const { customerId } = req.params;
@@ -180,7 +199,7 @@ route.post('/rateProvider', async (req, res) => {
             populate: {
                 path: 'requested_provider_id',
                 model: 'provider',
-                select: 'name provider_image' // Select the fields you want to retrieve from the customer document
+                select: 'name provider_image email birr' // Select the fields you want to retrieve from the customer document
             }
         }).then((customer)=>{
             const requested_services = customer.requested_Providers;
