@@ -34,6 +34,11 @@ const DebtSchema = new mongoose.Schema({
     date:{
         type:Date,
         default:Date.now
+    },
+    paid:{
+        type:Boolean,
+        default:false
+        
     }
 })
 module.exports = mongoose.model("debt",DebtSchema)

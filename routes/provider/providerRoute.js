@@ -3,6 +3,7 @@ const router = express.Router();
 const provider = require("../../schemas/provider");
 const customer = require("../../schemas/customer")
 const bcrypt = require('bcrypt');
+const Debt = require("../../schemas/Debt");
 //create a new provider Api
 router.post("/create", async (req, res) => {
   const { email, password } = req.body;
@@ -400,5 +401,15 @@ router.put('/updateStatus/:providerId', async (req, res) => {
     res.json({error:error.message})
   }
 })
+//route to get all the debts of the provider
+router.get('/getDebts/:providerId', async (req, res) => {
+  try {
+      const debts = await Debt.find({ 'provider_Info.provider_id': req.params.providerId });
+      res.json(debts);
+  } catch (err) {
+      console.error(err);
+      res.json({ message: 'Server Error' });
+  }
+});
 
 module.exports = router

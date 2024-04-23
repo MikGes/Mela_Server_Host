@@ -4,6 +4,7 @@ const customer = require("../../schemas/customer")
 const provider = require("../../schemas/provider")
 const report = require("../../schemas/report")
 const bcrypt = require('bcrypt');
+const Debt = require("../../schemas/Debt")
 //create customer account Api
 route.post("/create", async (req, res) => {
   const { email, password } = req.body;
@@ -375,4 +376,14 @@ route.put('/saveProfile/:customerId', async (req, res) => {
         res.json({ message: 'Internal server error' });
     }
 })
+//route to get all the debts of the customer 
+route.get('/getDebts/:customerId', async (req, res) => {
+  try {
+      const debts = await Debt.find({ 'customer_Info.customer_id': req.params.customerId });
+      res.json(debts);
+  } catch (err) {
+      console.error(err);
+      res.json({ message: 'Server Error' });
+  }
+});
 module.exports = route
