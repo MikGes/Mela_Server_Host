@@ -15,6 +15,7 @@ app.use("/provider",providerRoute)
 app.use("/customer",customerRoute)
 app.use("/services",servicesRoute)
 app.use("/debt",debt)
+app.use("/payment",require("./routes/debt/Chapa"))
 app.listen(4000,()=>{
     console.log("Server listening on port 4000")
 })
