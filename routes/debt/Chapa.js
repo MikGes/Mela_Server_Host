@@ -5,13 +5,16 @@ const stripe = require('stripe')('sk_test_51P9SqYP5P49FplSBplYLEhYgCjvPuepbNaIGu
 // Watch this video to get started: https://youtu.be/rPR2aJ6XnAc.
 app.post('/payment-sheet', async (req, res) => {
   // Use an existing Customer ID if this is a returning customer.
+  var {birr} = req.body
+  birr = (birr * 0.02) * 100
+  console.log(birr)
   const customer = await stripe.customers.create();
   const ephemeralKey = await stripe.ephemeralKeys.create(
     {customer: customer.id},
     {apiVersion: '2024-04-10'}
   );
   const paymentIntent = await stripe.paymentIntents.create({
-    amount: 1099,
+    amount: birr,
     currency: 'usd',
     customer: customer.id,
     // In the latest version of the API, specifying the `automatic_payment_methods` parameter

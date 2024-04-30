@@ -386,4 +386,42 @@ route.get('/getDebts/:customerId', async (req, res) => {
       res.json({ message: 'Server Error' });
   }
 });
+//route to add debt
+route.post('/addDebt', async (req, res) => {
+  try {
+    // Extract data from request body
+    const { customerId, providerId, serviceId, commission } = req.body;
+
+    // Create a debt object
+    const debt = {
+      customer_Info: {
+        name: req.body.customerName,
+        email: req.body.customerEmail,
+        customer_id: customerId
+      },
+      serviceId: serviceId,
+      provider_Info: {
+        name: req.body.providerName,
+        email: req.body.providerEmail,
+        provider_id: providerId
+      },
+      commission: commission
+    };
+
+    // Update customer's debts array
+    await customer.findByIdAndUpdate(customerId, {
+      $push: { debts: debt }
+    });
+
+    // Update provider's debts array
+    await provider.findByIdAndUpdate(providerId, {
+      $push: { debts: debt }
+    });
+
+    res.status(200).json({ message: 'Debt added successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 module.exports = route
