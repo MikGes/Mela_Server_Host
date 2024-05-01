@@ -8,8 +8,6 @@ app.post('/payment-sheet', async (req, res) => {
   try {
     const { birr,customerEmail,
       customerName,providerName,providerEmail } = req.body;
-    const amountInUsd = (birr * 0.02) * 100;
-console.log(providerEmail,providerName)
     // Create a new customer with the provided email and full name
     const customer = await stripe.customers.create({
       email: customerEmail?customerEmail:providerEmail,
@@ -24,8 +22,8 @@ console.log(providerEmail,providerName)
 
     // Create a payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amountInUsd,
-      currency: 'usd',
+      amount: birr,
+      currency: 'inr',
       customer: customer.id,
       automatic_payment_methods: {
         enabled: true,

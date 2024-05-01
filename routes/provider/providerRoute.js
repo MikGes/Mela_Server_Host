@@ -401,16 +401,6 @@ router.put('/updateStatus/:providerId', async (req, res) => {
     res.json({error:error.message})
   }
 })
-//route to get all the debts of the provider
-router.get('/getDebts/:providerId', async (req, res) => {
-  try {
-      const debts = await Debt.find({ 'provider_Info.provider_id': req.params.providerId });
-      res.json(debts);
-  } catch (err) {
-      console.error(err);
-      res.json({ message: 'Server Error' });
-  }
-});
 //route to mark a job as completed
 router.put('/completeService/:providerId/:serviceId/:customerId', async (req, res) => {
   const { providerId, serviceId,customerId } = req.params;
@@ -437,13 +427,13 @@ router.put('/completeService/:providerId/:serviceId/:customerId', async (req, re
     //Customer SIDEEE
     const target_customer = await customer.findById(customerId);
   if (!target_customer) {
-    return res.status(404).json({ error: 'Customer not found' });
+    return res.json({ error: 'Provider not found' });
   }
 
   // Find the requested service with the given serviceId
   const service = target_customer.requested_Providers.find(service => service.serviceId === serviceId);
   if (!service) {
-    return res.status(404).json({ error: 'Service not found' });
+    return res.json({ error: 'Service not found' });
   }
 
   // Update the status of the service to "rejected"
@@ -455,7 +445,21 @@ router.put('/completeService/:providerId/:serviceId/:customerId', async (req, re
     res.json({ success: true, message: 'Success' });
   } catch (error) {
     console.error('Error completing service:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.json({ error: 'Server error' });
+  }
+});
+//route to get all the debts from the provider
+router.get('/getDebts/:providerId', async (req, res) => {
+  try {
+      const target_provider = await provider.findById(req.params.providerId);
+      if (!target_provider) {
+          return resjson({ error: 'Provider not found' });
+      }
+      const debts = target_provider.debts;
+      res.json(debts);
+  } catch (err) {
+      console.error(err);
+      res.json({ message: 'Server Error' });
   }
 });
 
