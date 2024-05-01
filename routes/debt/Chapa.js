@@ -1,34 +1,47 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 const stripe = require('stripe')('sk_test_51P9SqYP5P49FplSBplYLEhYgCjvPuepbNaIGuShGTIzJ2bfTMhfV1PMUK2ueQZgixIb5oJqil0tmA69YBFTcLMg400nW3HRvMn');
-// This example sets up an endpoint using the Express framework.
-// Watch this video to get started: https://youtu.be/rPR2aJ6XnAc.
-app.post('/payment-sheet', async (req, res) => {
-  // Use an existing Customer ID if this is a returning customer.
-  var {birr} = req.body
-  birr = (birr * 0.02) * 100
-  console.log(birr)
-  const customer = await stripe.customers.create();
-  const ephemeralKey = await stripe.ephemeralKeys.create(
-    {customer: customer.id},
-    {apiVersion: '2024-04-10'}
-  );
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: birr,
-    currency: 'usd',
-    customer: customer.id,
-    // In the latest version of the API, specifying the `automatic_payment_methods` parameter
-    // is optional because Stripe enables its functionality by default.
-    automatic_payment_methods: {
-      enabled: true,
-    },
-  });
 
-  res.json({
-    paymentIntent: paymentIntent.client_secret,
-    ephemeralKey: ephemeralKey.secret,
-    customer: customer.id,
-    publishableKey: 'pk_test_51P9SqYP5P49FplSBdpZKFxu1NYhffH2BlvMkoDXjq0HQjHgNUxejNnIiAMR4pMXuDYlPyeO3E6QIgod6AChfsEVZ00NGpB279b'
-  });
+app.use(express.json());
+
+app.post('/payment-sheet', async (req, res) => {
+  try {
+    const { birr,customerEmail,
+      customerName,providerName,providerEmail } = req.body;
+    const amountInUsd = (birr * 0.02) * 100;
+console.log(providerEmail,providerName)
+    // Create a new customer with the provided email and full name
+    const customer = await stripe.customers.create({
+      email: customerEmail?customerEmail:providerEmail,
+      name: customerName?customerName:providerName,
+    });
+
+    // Generate an ephemeral key for the customer
+    const ephemeralKey = await stripe.ephemeralKeys.create(
+      { customer: customer.id },
+      { apiVersion: '2024-04-10' }
+    );
+
+    // Create a payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amountInUsd,
+      currency: 'usd',
+      customer: customer.id,
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+
+    res.json({
+      paymentIntent: paymentIntent.client_secret,
+      ephemeralKey: ephemeralKey.secret,
+      customer: customer.id,
+      publishableKey: 'pk_test_51P9SqYP5P49FplSBdpZKFxu1NYhffH2BlvMkoDXjq0HQjHgNUxejNnIiAMR4pMXuDYlPyeO3E6QIgod6AChfsEVZ00NGpB279b'
+    });
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
-module.exports = app
+
+module.exports = app;
