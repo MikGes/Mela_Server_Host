@@ -75,7 +75,51 @@ const customerSchema = new mongoose.Schema({
             type:Number,
             default:""
         }
-    }
+    },
+    debts:[
+        {
+            customer_Info:{
+                name:{
+                    type:String
+                },
+                email:{
+                    type:String
+                },
+                customer_id:{
+                    type:mongoose.Schema.Types.ObjectId,
+                    ref:"customer",
+                },
+        
+            },
+            serviceId:{
+                type:String
+            },
+            provider_Info:{
+                name:{
+                    type:String
+                },
+                email:{
+                    type:String
+                },
+                provider_id:{
+                    type:mongoose.Schema.Types.ObjectId,
+                    ref:"provider",
+                },
+            },
+            commission:{
+                type:Number
+            },  
+            date:{
+                type:Date,
+                default:Date.now
+            },
+            paid:{
+                type:Boolean,
+                default:false
+                
+            }
+        }
+        ], 
 },
 {
     timestamps:true

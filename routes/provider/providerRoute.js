@@ -455,11 +455,41 @@ router.get('/getDebts/:providerId', async (req, res) => {
       if (!target_provider) {
           return resjson({ error: 'Provider not found' });
       }
-      const debts = target_provider.debts;
       res.json(debts);
   } catch (err) {
       console.error(err);
       res.json({ message: 'Server Error' });
+  }
+});
+//route to delete a specific debt from the provider
+router.delete('/deleteDebt/:providerId/:debtId', async (req, res) => {
+  const { providerId, debtId } = req.params;
+
+  try {
+    // Find the provider by ID
+    const target_provider = await provider.findById(providerId);
+
+    if (!provider) {
+      return res.json({ message: 'Provider not found' });
+    }
+
+    // Find the index of the debt with the specified ID in the debts array
+    const debtIndex = target_provider.debts.findIndex(debt => debt._id.toString() === debtId);
+
+    if (debtIndex === -1) {
+      return res.json({ message: 'Debt not found' });
+    }
+
+    // Remove the debt from the debts array
+    target_provider.debts.splice(debtIndex, 1);
+
+    // Save the updated provider object
+    await target_provider.save();
+
+    res.json({ message: 'Debt deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.json({ message: 'Server error' });
   }
 });
 

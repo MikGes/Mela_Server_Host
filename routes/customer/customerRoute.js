@@ -376,22 +376,11 @@ route.put('/saveProfile/:customerId', async (req, res) => {
         res.json({ message: 'Internal server error' });
     }
 })
-//route to get all the debts of the customer 
-route.get('/getDebts/:customerId', async (req, res) => {
-  try {
-      const debts = await Debt.find({ 'customer_Info.customer_id': req.params.customerId });
-      res.json(debts);
-  } catch (err) {
-      console.error(err);
-      res.json({ message: 'Server Error' });
-  }
-});
 //route to add debt
 route.post('/addDebt', async (req, res) => {
   try {
     // Extract data from request body
     const { customerId, providerId, serviceId, commission } = req.body;
-
     // Create a debt object
     const debt = {
       customer_Info: {
@@ -417,11 +406,57 @@ route.post('/addDebt', async (req, res) => {
     await provider.findByIdAndUpdate(providerId, {
       $push: { debts: debt }
     });
-
     res.status(200).json({ message: 'Debt added successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+//route to delete a specific debt
+route.delete('/deleteDebt/:customerId/:debtId', async (req, res) => {
+  const { customerId, debtId } = req.params;
+
+  try {
+    // Find the provider by ID
+    const target_customer = await customer.findById(customerId);
+
+    if (!provider) {
+      return res.json({ message: 'Customer not found' });
+    }
+
+    // Find the index of the debt with the specified ID in the debts array
+    const debtIndex = target_customer.debts.findIndex(debt => debt._id.toString() === debtId);
+
+    if (debtIndex === -1) {
+      return res.json({ message: 'Debt not found' });
+    }
+
+    // Remove the debt from the debts array
+    target_customer.debts.splice(debtIndex, 1);
+
+    // Save the updated provider object
+    await target_customer.save();
+
+    res.json({ message: 'Debt deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.json({ message: 'Server error' });
+  }
+});
+//route to get all the debts from the customer
+route.get('/getDebts/:customerId', async (req, res) => {
+  try {
+      const target_customer = await customer.findById(req.params.customerId);
+      if (!target_customer) {
+          return resjson({ error: 'Customer not found' });
+      }
+   
+      const debts = target_customer.debts;
+      res.json(debts);
+  } catch (err) {
+      console.error(err);
+      res.json({ message: 'Server Error' });
+  }
+});
+
 module.exports = route
