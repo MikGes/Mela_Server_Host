@@ -41,7 +41,6 @@ route.post("/create", async (req, res) => {
     });
   }
 });
-//route to get a specific customer
 
 //route to get a specific customer
 route.get("/get/:customerId", async (req, res) => {
@@ -458,5 +457,17 @@ route.get('/getDebts/:customerId', async (req, res) => {
       res.json({ message: 'Server Error' });
   }
 });
-
+//route to get the activatedByAdmin status of the customer
+route.get('/getActivatedByAdmin/:customerId', async (req, res) => {
+  try {
+      const target_customer = await customer.findById(req.params.customerId);
+      if (!target_customer) {
+          return res.json({ error: 'Customer not found' });
+      }
+      res.json({activatedByAdmin:target_customer.activatedByAdmin});
+  } catch (err) {
+      console.error(err);
+      res.json({ message: 'Server Error' });
+  }
+})
 module.exports = route

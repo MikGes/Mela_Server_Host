@@ -14,6 +14,10 @@ const customerSchema = new mongoose.Schema({
         required:[true,"Please enter an email"],
         default:""
     },
+    activatedByAdmin:{
+        type:Boolean,
+        default:true
+    },
     type_of_user:{
         type:String,
         default:""
@@ -21,10 +25,6 @@ const customerSchema = new mongoose.Schema({
     completed_profile:{
         type:Boolean,
         default:false
-    },
-    km:{
-        type:Number,
-        default:null,
     },
     customer_image:{
         type:String,
@@ -66,16 +66,6 @@ const customerSchema = new mongoose.Schema({
             
         }
     ],
-    location:{
-        latitude:{
-            type:Number,
-            default:""
-        },
-        longitude:{
-            type:Number,
-            default:""
-        }
-    },
     debts:[
         {
             customer_Info:{

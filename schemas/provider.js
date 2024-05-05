@@ -58,7 +58,7 @@ const providerSchema = new mongoose.Schema({
     },
     activatedByAdmin:{
         type:Boolean,
-        default:false
+        default:true
     },
     verified:{
         type:Boolean,

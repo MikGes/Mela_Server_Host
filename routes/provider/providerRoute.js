@@ -86,7 +86,7 @@ router.post("/login", async (req, res) => {
 router.get("/getProviders/:job", async (req, res) => {
     const { job } = req.params;
     try {
-      const providers = await provider.find({ services: { $in: [job] } });
+      const providers = await provider.find({ services: { $in: [job] },activatedByAdmin:true,verified:true });
       res.status(200).json(providers);
     } catch (error) {
       console.error("Error fetching providers:", error);
@@ -492,5 +492,31 @@ router.delete('/deleteDebt/:providerId/:debtId', async (req, res) => {
     res.json({ message: 'Server error' });
   }
 });
+//route to get the activatedByAdmin status of the provider
+router.get('/getActivatedByAdmin/:providerId', async (req, res) => {
+  try {
+      const target_provider = await provider.findById(req.params.providerId);
+      if (!target_provider) {
+          return res.json({ error: 'Provider not found' });
+      }
+      res.json({activatedByAdmin:target_provider.activatedByAdmin});
+  } catch (err) {
+      console.error(err);
+      res.json({ message: 'Server Error' });
+  }
+})
+//route to get the verified status of the provider
+router.get('/gotVerified/:providerId', async (req, res) => {
+  try {
+      const target_provider = await provider.findById(req.params.providerId);
+      if (!target_provider) {
+          return res.json({ error: 'Provider not found' });
+      }
+      res.json({verifiedByAdmin:target_provider.verified});
+  } catch (err) {
+      console.error(err);
+      res.json({ message: 'Server Error' });
+  }
+})
 
 module.exports = router
