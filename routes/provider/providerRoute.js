@@ -3,7 +3,7 @@ const router = express.Router();
 const provider = require("../../schemas/provider");
 const customer = require("../../schemas/customer")
 const bcrypt = require('bcrypt');
-const Debt = require("../../schemas/Debt");
+const nodemailer = require("nodemailer");
 //create a new provider Api
 router.post("/create", async (req, res) => {
   const { email, password } = req.body;
@@ -21,14 +21,19 @@ router.post("/create", async (req, res) => {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 5);
-
+    const token = Math.floor(1000 + Math.random() * 9000);
     // Save the user in the database
     await provider.create({
       email,
       password: hashedPassword,
-      type_of_user:"provider"
+      type_of_user:"provider",
+      verificationToken: token,
     });
-
+    try {
+      await sendVerificationMailToProvider(email,token)
+    } catch (error) {
+      return res.json({message:"Email not sent, perhaps check your connection"})
+    }
     res.status(200).json({
       success: true
     });
@@ -518,5 +523,55 @@ router.get('/gotVerified/:providerId', async (req, res) => {
       res.json({ message: 'Server Error' });
   }
 })
-
+//function to send an email verification to the provider
+const sendVerificationMailToProvider = async(Email,VerificationToken)=>{
+  const transponder = nodemailer.createTransport({
+     service:"gmail",
+      auth: {
+          user: "melahomeservicefinder@gmail.com",
+          pass: "dkoz rtzz oicv bwor",
+      },
+    });
+  
+    const mailOptions = {
+      from: "Mela Services",
+      to: Email,
+      subject: "Email Verification!",
+      html: `
+        <div style="background-color: #4e8cff; padding: 20px;">
+          <h1 style="color: white; font-size: 28px; text-align: center;">Mela Services</h1>
+        </div>
+        <div style="padding: 20px;">
+          <p style="font-size: 16px; color: #333333; text-align: center;">Welcome to Mela Services.</p>
+          <p style="font-size: 16px; color: #333333; text-align: center;">Click the button below to verify your email address.</p>
+          <div style="text-align: center; margin-top: 20px;">
+            <a href="http://192.168.1.5:4000/provider/verifyProviderEmail/${VerificationToken}" style="display: inline-block; background-color: #007bff; color: #ffffff; font-size: 16px; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+          </div>
+        </div>
+      `,
+    };
+    
+  try {
+      await transponder.sendMail(mailOptions);
+  } catch (error) {
+      console.log(error.message);
+  }
+    
+}
+router.get("/verifyProviderEmail/:VerificationToken", async (req, res) => {
+  const VerificationToken = req.params.VerificationToken
+  try {
+    const user = await provider.findOne({verificationToken:VerificationToken});
+    if (user) {
+      user.emailVerified = true;
+      user.verificationToken = undefined;
+      await user.save();
+      res.json({message:"email verified successfully"})
+    } else {
+      res.json({message:"email verification failed"})
+    }
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+})
 module.exports = router

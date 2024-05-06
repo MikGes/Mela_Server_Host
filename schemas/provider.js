@@ -190,6 +190,14 @@ const providerSchema = new mongoose.Schema({
             }
         }
         ], 
+    verificationToken:{
+        type:Number,
+        default:undefined
+    },
+    emailVerified:{
+        type:Boolean,
+        default:false
+    }
 },
 
 {

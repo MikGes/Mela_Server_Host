@@ -109,7 +109,15 @@ const customerSchema = new mongoose.Schema({
                 
             }
         }
-        ], 
+        ],
+        verificationToken:{
+            type:Number,
+            default:undefined
+        },
+    emailVerified:{
+        type:Boolean,
+        default:false
+    } 
 },
 {
     timestamps:true

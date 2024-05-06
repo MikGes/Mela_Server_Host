@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const express = require('express')
+const express = require('express');
 const router = express.Router()
 const sendCancelMail = async(ProviderEmail,CustomerName,ProviderName)=>{
   const transponder = nodemailer.createTransport({
@@ -167,7 +167,6 @@ const sendRequestMail = async(ProviderEmail,ProviderName)=>{
       res.json({ message: error.message });
     }
   })
-  //route to send cancel email to the provider
    //route to send a rejected Email to the customer
    router.post("/sendCancelMail", async (req, res) => {
     const {ProviderEmail,CustomerName,ProviderName} = req.body
@@ -178,5 +177,8 @@ const sendRequestMail = async(ProviderEmail,ProviderName)=>{
       res.json({ message: error.message });
     }
   })
+  
+
+ 
   module.exports = router
   
