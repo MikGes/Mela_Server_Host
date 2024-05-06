@@ -91,7 +91,7 @@ router.post("/login", async (req, res) => {
 router.get("/getProviders/:job", async (req, res) => {
     const { job } = req.params;
     try {
-      const providers = await provider.find({ services: { $in: [job] },activatedByAdmin:true,verified:true });
+      const providers = await provider.find({ services: { $in: [job] },activatedByAdmin:true,verified:true,emailVerified:true });
       res.status(200).json(providers);
     } catch (error) {
       console.error("Error fetching providers:", error);
