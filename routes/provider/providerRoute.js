@@ -128,7 +128,7 @@ router.get("/getProviders/:job", async (req, res) => {
             populate: {
                 path: 'request_customer_id',
                 model: 'customer',
-                select: 'name customer_image customer_phone' // Select the fields you want to retrieve from the customer document
+                select: 'name customer_image customer_phone email' // Select the fields you want to retrieve from the customer document
             }
         }).then((provider)=>{
             const services = provider.serviceRequest;
@@ -468,7 +468,7 @@ router.delete('/deleteDebt/:providerId/:debtId', async (req, res) => {
   try {
     // Find the provider by ID
     const target_provider = await provider.findById(providerId);
-
+    
     if (!provider) {
       return res.json({ message: 'Provider not found' });
     }
