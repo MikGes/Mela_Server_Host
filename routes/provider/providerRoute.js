@@ -91,7 +91,7 @@ router.post("/login", async (req, res) => {
 router.get("/getProviders/:job", async (req, res) => {
     const { job } = req.params;
     try {
-      const providers = await provider.find({ services: { $in: [job] },activatedByAdmin:true,verified:true,emailVerified:true });
+      const providers = await provider.find({ services: { $in: [job] },activatedByAdmin:true,verified:true,emailVerified:true,completed_profile:true });
       res.status(200).json(providers);
     } catch (error) {
       console.error("Error fetching providers:", error);
@@ -460,6 +460,8 @@ router.get('/getDebts/:providerId', async (req, res) => {
       if (!target_provider) {
           return resjson({ error: 'Provider not found' });
       }
+
+      const debts = target_provider.debts;
       res.json(debts);
   } catch (err) {
       console.error(err);
@@ -467,7 +469,7 @@ router.get('/getDebts/:providerId', async (req, res) => {
   }
 });
 //route to delete a specific debt from the provider
-router.delete('/deleteDebt/:providerId/:debtId', async (req, res) => {
+router.get('/deleteDebt/:providerId/:debtId', async (req, res) => {
   const { providerId, debtId } = req.params;
 
   try {
@@ -491,7 +493,7 @@ router.delete('/deleteDebt/:providerId/:debtId', async (req, res) => {
     // Save the updated provider object
     await target_provider.save();
 
-    res.json({ message: 'Debt deleted successfully' });
+    res.send('<h1>Debt Paid Successfully! You may now close this site</h1>');
   } catch (error) {
     console.error(error);
     res.json({ message: 'Server error' });
@@ -545,7 +547,7 @@ const sendVerificationMailToProvider = async(Email,VerificationToken)=>{
           <p style="font-size: 16px; color: #333333; text-align: center;">Welcome to Mela Services.</p>
           <p style="font-size: 16px; color: #333333; text-align: center;">Click the button below to verify your email address.</p>
           <div style="text-align: center; margin-top: 20px;">
-            <a href="http://192.168.1.5:4000/provider/verifyProviderEmail/${VerificationToken}" style="display: inline-block; background-color: #007bff; color: #ffffff; font-size: 16px; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+            <a href="http://192.168.1.4:4000/provider/verifyProviderEmail/${VerificationToken}" style="display: inline-block; background-color: #007bff; color: #ffffff; font-size: 16px; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
           </div>
         </div>
       `,

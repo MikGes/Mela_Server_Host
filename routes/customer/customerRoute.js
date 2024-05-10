@@ -416,13 +416,13 @@ route.post('/addDebt', async (req, res) => {
     res.status(200).json({ message: 'Debt added successfully' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.json({ message: 'Internal server error' });
   }
 });
 //route to delete a specific debt
-route.delete('/deleteDebt/:customerId/:debtId', async (req, res) => {
+route.get('/deleteDebt/:customerId/:debtId', async (req, res) => {
   const { customerId, debtId } = req.params;
-
+console.log(customerId,debtId)
   try {
     // Find the provider by ID
     const target_customer = await customer.findById(customerId);
@@ -443,10 +443,9 @@ route.delete('/deleteDebt/:customerId/:debtId', async (req, res) => {
 
     // Save the updated provider object
     await target_customer.save();
-
-    res.json({ message: 'Debt deleted successfully' });
+    res.send('<h1>Debt Paid Successfully! You may now close this site</h1>');
   } catch (error) {
-    console.error(error);
+    console.error(error.message);
     res.json({ message: 'Server error' });
   }
 });
@@ -500,7 +499,7 @@ const sendVerificationMailToCustomer = async(Email,VerificationToken)=>{
           <p style="font-size: 16px; color: #333333; text-align: center;">Welcome to Mela Services.</p>
           <p style="font-size: 16px; color: #333333; text-align: center;">Click the button below to verify your email address.</p>
           <div style="text-align: center; margin-top: 20px;">
-            <a href="http://192.168.1.5:4000/customer/verifyCustomerEmail/${VerificationToken}" style="display: inline-block; background-color: #007bff; color: #ffffff; font-size: 16px; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+            <a href="http://192.168.1.4:4000/customer/verifyCustomerEmail/${VerificationToken}" style="display: inline-block; background-color: #007bff; color: #ffffff; font-size: 16px; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
           </div>
         </div>
       `,
