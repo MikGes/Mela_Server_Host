@@ -338,9 +338,41 @@ router.put('/updateInfo/:providerId', async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+//router to update some fields for the provider
+router.put('/updateSomeInfo/:providerId', async (req, res) => {
+  const {  
+    name,
+    provider_phone,
+    provider_image, 
+    age,
+    provider_description, 
+  } = req.body;
+  const providerId = req.params.providerId;
 
+  try {
+    // Find the provider by ID
+    const targetProvider = await provider.findById(providerId);
 
-module.exports = router;
+    if (!targetProvider) {
+      return res.status(404).json({ message: 'Provider not found' });
+    }
+
+    // Update provider information
+    targetProvider.name = name;
+    targetProvider.provider_phone = provider_phone;
+    targetProvider.provider_image = provider_image;
+    targetProvider.age = age;
+    targetProvider.provider_description = provider_description;
+
+    // Save the updated provider
+    await targetProvider.save();
+
+    res.json({ message: 'Information updated successfully' });
+  } catch (error) {
+    console.error('Error updating provider information:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
 //route to get a specific provider
 router.get('/getProvider/:providerId', async (req, res) => {
   const providerId = req.params.providerId;
