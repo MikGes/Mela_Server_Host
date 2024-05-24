@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const provider = require("../../schemas/provider");
 const customer = require("../../schemas/customer")
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const nodemailer = require("nodemailer");
 //create a new provider Api
 router.post("/create", async (req, res) => {
@@ -20,7 +20,7 @@ router.post("/create", async (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 5);
+    const hashedPassword = await bcryptjs.hash(password, 5);
     const token = Math.floor(1000 + Math.random() * 9000);
     // Save the user in the database
     await provider.create({
@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Compare the provided password with the hashed password from the database
-    const passwordMatch = await bcrypt.compare(password, target_provider.password);
+    const passwordMatch = await bcryptjs.compare(password, target_provider.password);
 
     // If passwords don't match, return an error
     if (!passwordMatch) {
@@ -397,7 +397,7 @@ router.patch('/changePassword/:providerId', async(req,res)=>{
       return res.json({error:"Provider is not found!"})
     }
     else{
-      const hashedPassword = await bcrypt.hash(newPassword, 5);
+      const hashedPassword = await bcryptjs.hash(newPassword, 5);
       target_provider.password = hashedPassword
       await target_provider.save()
       res.json({success:true})

@@ -3,7 +3,7 @@ const route = express.Router()
 const customer = require("../../schemas/customer")
 const provider = require("../../schemas/provider")
 const report = require("../../schemas/report")
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const nodemailer = require("nodemailer");
 //create customer account Api
 route.post("/create", async (req, res) => {
@@ -21,7 +21,7 @@ route.post("/create", async (req, res) => {
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 5);
+    const hashedPassword = await bcryptjs.hash(password, 5);
 
     // Save the user in the database
     const token = Math.floor(1000 + Math.random() * 9000);
@@ -84,7 +84,7 @@ route.post("/login", async (req, res) => {
     }
 
     // Compare the provided password with the hashed password from the database
-    const passwordMatch = await bcrypt.compare(password, target_customer.password);
+    const passwordMatch = await bcryptjs.compare(password, target_customer.password);
 
     // If passwords don't match, return an error
     if (!passwordMatch) {
@@ -188,7 +188,7 @@ route.post('/rateProvider', async (req, res) => {
         return res.json({error:"Customer is not found!"})
       }
       else{
-        const hashedPassword = await bcrypt.hash(newPassword, 5);
+        const hashedPassword = await bcryptjs.hash(newPassword, 5);
         target_customer.password = hashedPassword
         await target_customer.save()
         res.json({success:true})
