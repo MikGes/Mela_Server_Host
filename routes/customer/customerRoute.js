@@ -499,7 +499,7 @@ const sendVerificationMailToCustomer = async(Email,VerificationToken)=>{
           <p style="font-size: 16px; color: #333333; text-align: center;">Welcome to Mela Services.</p>
           <p style="font-size: 16px; color: #333333; text-align: center;">Click the button below to verify your email address.</p>
           <div style="text-align: center; margin-top: 20px;">
-            <a href="https://successful-jade-baseball-cap.cyclic.app/customer/verifyCustomerEmail/${VerificationToken}" style="display: inline-block; background-color: #007bff; color: #ffffff; font-size: 16px; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
+            <a href="https://mela-server-host.onrender.com/customer/verifyCustomerEmail/${VerificationToken}" style="display: inline-block; background-color: #007bff; color: #ffffff; font-size: 16px; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify Email</a>
           </div>
         </div>
       `,
