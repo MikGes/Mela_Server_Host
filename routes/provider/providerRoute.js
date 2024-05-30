@@ -91,7 +91,7 @@ router.post("/login", async (req, res) => {
 router.get("/getProviders/:job", async (req, res) => {
     const { job } = req.params;
     try {
-      const providers = await provider.find({ services: { $in: [job] },activatedByAdmin:true,verified:true,emailVerified:true,completed_profile:true });
+      const providers = await provider.find({ services: { $in: [job] },activatedByAdmin:true,verified:"accepted",emailVerified:true,completed_profile:true });
       res.status(200).json(providers);
     } catch (error) {
       console.error("Error fetching providers:", error);
@@ -551,7 +551,8 @@ router.get('/gotVerified/:providerId', async (req, res) => {
       if (!target_provider) {
           return res.json({ error: 'Provider not found' });
       }
-      res.json({verifiedByAdmin:target_provider.verified});
+      const {verified} = target_provider
+      res.json({verifiedByAdmin:verified==="accepted"?true:false});
   } catch (err) {
       console.error(err);
       res.json({ message: 'Server Error' });
