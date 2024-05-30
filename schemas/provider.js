@@ -61,8 +61,8 @@ const providerSchema = new mongoose.Schema({
         default:true
     },
     verified:{
-        type:Boolean,
-        default:false
+        type:String,
+        default:"pending"
     },
     services:{
         type:Array
