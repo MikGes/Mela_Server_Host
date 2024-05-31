@@ -135,8 +135,8 @@ route.post('/rateProvider', async (req, res) => {
     try {
       const { providerId, customerId, reportMessage } = req.body;
       await report.create({
-        reporter_id: providerId,
-        reported_provider_id:customerId,
+        reporter_id: customerId,
+        reported_provider_id:providerId,
         reportMessage,
       })
       res.status(200).json({ success: true });
